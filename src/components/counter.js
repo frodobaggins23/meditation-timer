@@ -1,14 +1,13 @@
 import React, { Component } from "react";
 import { CounterStyles } from "../styles/AppMainStyles";
 import CounterTime from "./counter-time";
-import gong from "../audio/gong.mp3";
+import gongSound from "../audio/gong.mp3";
 
 const defaultState = {
   minutes: 0,
   seconds: 10,
   active: false,
-  completed: false,
-  default: true
+  completed: false
 };
 
 export default class Counter extends Component {
@@ -54,6 +53,7 @@ export default class Counter extends Component {
         completed: true
       });
       this.stopCounting();
+      this.gong.play();
     }
   }
 
@@ -97,13 +97,15 @@ export default class Counter extends Component {
           seconds={this.formatMe(seconds)}
         />
 
-        <button
-          onClick={
-            active ? () => this.stopCounting() : () => this.countMeDown()
-          }
-        >
-          {active ? "Pause" : "Start"}
-        </button>
+        {!completed && (
+          <button
+            onClick={
+              active ? () => this.stopCounting() : () => this.countMeDown()
+            }
+          >
+            {active ? "Pause" : "Start"}
+          </button>
+        )}
         <button onClick={() => this.reset()}>Reset</button>
         <div
           onClick={() => {
@@ -126,8 +128,13 @@ export default class Counter extends Component {
         >
           15:00
         </div>
-        <button onClick={() => this.playGong()}>Gong</button>
-        {/* {completed && <audio src={gong} autoPlay />} */}
+        <button onClick={() => this.gong.play()}>Gong</button>
+        <audio
+          ref={gong => {
+            this.gong = gong;
+          }}
+          src={gongSound}
+        />
       </CounterStyles>
     );
   }
