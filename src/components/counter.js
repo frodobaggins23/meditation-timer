@@ -1,7 +1,10 @@
 import React, { Component } from "react";
-import { CounterStyles } from "../styles/AppMainStyles";
+import { AppBlock, CounterStyles, AppBlockFlex } from "../styles/AppMainStyles";
 import CounterTime from "./counter-time";
+import Button from "./button";
+import TimeCircle from "./time-circle";
 import gongSound from "../audio/gong.mp3";
+import { formatMe } from "../functionalities/func";
 
 const defaultState = {
   minutes: 0,
@@ -14,18 +17,10 @@ export default class Counter extends Component {
   constructor(props) {
     super(props);
     this.state = defaultState;
-    this.myRef = React.createRef();
-  }
-
-  formatMe(time) {
-    if (time < 10) {
-      return "0" + time;
-    }
-    return `${time}`;
+    this.gong = React.createRef();
   }
 
   countDown() {
-    console.log("counting");
     const { minutes, seconds } = this.state;
     if (minutes >= 0 && seconds >= 0) {
       if (seconds > 0) {
@@ -53,7 +48,7 @@ export default class Counter extends Component {
         completed: true
       });
       this.stopCounting();
-      this.gong.play();
+      this.gong.current.play();
     }
   }
 
@@ -79,62 +74,44 @@ export default class Counter extends Component {
   }
 
   setDefault(minutes, seconds) {
-    defaultState.minutes = minutes;
-    defaultState.seconds = seconds;
+    minutes != null && (defaultState.minutes = minutes);
+    seconds != null && (defaultState.seconds = seconds);
     this.reset();
   }
 
   render() {
     const { minutes, seconds, active, completed } = this.state;
-    // if (completed) {
-    //   this.stopCounting();
-    // }
 
     return (
       <CounterStyles>
-        <CounterTime
-          minutes={this.formatMe(minutes)}
-          seconds={this.formatMe(seconds)}
-        />
+        <AppBlock>
+          <CounterTime
+            minutes={formatMe(minutes)}
+            seconds={formatMe(seconds)}
+          />
+        </AppBlock>
+        <AppBlock>
+          <Button
+            type="main"
+            completed={completed}
+            active={active}
+            start={this.countMeDown.bind(this)}
+            stop={this.stopCounting.bind(this)}
+          />
 
-        {!completed && (
-          <button
-            onClick={
-              active ? () => this.stopCounting() : () => this.countMeDown()
-            }
-          >
-            {active ? "Pause" : "Start"}
-          </button>
-        )}
-        <button onClick={() => this.reset()}>Reset</button>
-        <div
-          onClick={() => {
-            this.setDefault(5, 0);
-          }}
-        >
-          5:00
-        </div>
-        <div
-          onClick={() => {
-            this.setDefault(10, 0);
-          }}
-        >
-          10:00
-        </div>
-        <div
-          onClick={() => {
-            this.setDefault(15, 0);
-          }}
-        >
-          15:00
-        </div>
-        <button onClick={() => this.gong.play()}>Gong</button>
-        <audio
-          ref={gong => {
-            this.gong = gong;
-          }}
-          src={gongSound}
-        />
+          <Button action={this.reset.bind(this)} />
+        </AppBlock>
+
+        <AppBlock>
+          <AppBlockFlex>
+            <TimeCircle m={5} s={0} action={this.setDefault.bind(this)} />
+            <TimeCircle m={10} s={0} action={this.setDefault.bind(this)} />
+            <TimeCircle m={15} s={0} action={this.setDefault.bind(this)} />
+            <TimeCircle action={this.setDefault.bind(this)} custom={true} />
+          </AppBlockFlex>
+        </AppBlock>
+
+        <audio ref={this.gong} src={gongSound} />
       </CounterStyles>
     );
   }

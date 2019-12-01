@@ -1,10 +1,13 @@
 import React from "react";
+import { CounterTimeStyles } from "../styles/AppMainStyles";
 
 const CounterTime = ({ minutes, seconds }) => {
   return (
-    <span>
-      {minutes} : {seconds}
-    </span>
+    <CounterTimeStyles>
+      <span>
+        {minutes} : {seconds}
+      </span>
+    </CounterTimeStyles>
   );
 };
 

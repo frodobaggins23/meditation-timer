@@ -1,6 +1,8 @@
-const countMeDown = initialTime => {
-  console.log(initialTime);
-  return setInterval(() => initialTime--, 1000);
+const formatMe = time => {
+  if (time < 10) {
+    return "0" + time;
+  }
+  return `${time}`;
 };
 
-export { countMeDown };
+export { formatMe };
